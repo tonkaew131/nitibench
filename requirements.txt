@@ -1,0 +1,10 @@
+omegaconf
+jinja2
+openai
+google-generativeai
+tritonclient
+jupyter
+jsonlines
+pandas
+numpy
+pydantic
