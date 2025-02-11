@@ -1,2 +1,0 @@
-class LlmManager:
-    pass

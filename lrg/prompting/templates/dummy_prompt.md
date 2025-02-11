@@ -1,1 +1,0 @@
-{{name}} is a {{folder}} path.
