@@ -20,8 +20,8 @@ class EvalDataset(object):
     def __init__(self, 
                  law_dir: str = "/app/test_data/laws",
                  node_path: str = "/app/LRG/chunking/golden/gold_nodes.json",
-                 tax_data_path: str = "/app/test_data/usable_tax_case.csv",
-                 wangchan_data_path: str = "/app/test_data/full_data.csv",
+                 tax_data_path: str = "/app/test_data/hf_tax.csv",
+                 wangchan_data_path: str = "/app/test_data/hf_wcx.csv",
                  section_idx_path: str = "/app/LRG/dump/section_idx.json",
                  tax_columns: List[str] = ["ข้อหารือ", "actual_relevant_laws", "file_name"],
                  wangchan_columns: List[str] = ["question", "relevant_laws", "idx"],
@@ -60,11 +60,6 @@ class EvalDataset(object):
         
         self.section_idx = section_idx
         self.strat_name = node_path.split("/")[-2]
-        
-        #Select only the test set from wangchan
-        self.wangchan_df = self.wangchan_df[~self.wangchan_df.split.isin(["batch2", "pay"])].reset_index(drop=True)
-        #Select only the year more than 2021 for tax case
-        self.tax_df = self.tax_df[self.tax_df.year >= 2021].reset_index(drop=True)
         
         if "golden" in self.strat_name:
             self.mapper = None
