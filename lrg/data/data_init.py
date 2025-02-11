@@ -23,8 +23,8 @@ class EvalDataset(object):
                  tax_data_path: str = "/app/test_data/hf_tax.csv",
                  wangchan_data_path: str = "/app/test_data/hf_wcx.csv",
                  section_idx_path: str = "/app/LRG/dump/section_idx.json",
-                 tax_columns: List[str] = ["ข้อหารือ", "actual_relevant_laws", "file_name"],
-                 wangchan_columns: List[str] = ["question", "relevant_laws", "idx"],
+                 tax_columns: List[str] = ["ข้อหารือ", "actual_relevant_laws"],
+                 wangchan_columns: List[str] = ["question", "relevant_laws"],
                  ):
         
         
@@ -40,7 +40,6 @@ class EvalDataset(object):
         
         #Load tax and wangchan data
         self.wangchan_df = pd.read_csv(self.wangchan_data_path, encoding="utf-8-sig", converters={wangchan_columns[1]: eval})
-        self.wangchan_df = self.wangchan_df[(~self.wangchan_df[wangchan_columns[0]].isna()) & (~self.wangchan_df[wangchan_columns[1]].isna()) & (~self.wangchan_df[wangchan_columns[2]].isna())].reset_index(drop=True)
         
         self.tax_df = pd.read_csv(self.tax_data_path,  encoding="utf-8-sig", converters={tax_columns[1]: eval})
         # display(self.tax_df)
@@ -48,9 +47,11 @@ class EvalDataset(object):
         self.node_path = node_path
         self.text_nodes = self.get_nodes()
         
-        self.qa_tax = self.convert_to_qa(self.tax_df, self.tax_columns[0], self.tax_columns[1], self.tax_columns[2])
+        self.tax_df["idx"] = [f"{i:04d}" for i in range(self.tax_df.shape[0])]
+        self.qa_tax = self.convert_to_qa(self.tax_df, self.tax_columns[0], self.tax_columns[1], "idx")
         
-        self.qa_wangchan = self.convert_to_qa(self.wangchan_df, self.wangchan_columns[0], self.wangchan_columns[1], self.wangchan_columns[2])
+        self.wangchan_df["idx"] = [f"{i:04d}" for i in range(self.wangchan_df.shape[0])]
+        self.qa_wangchan = self.convert_to_qa(self.wangchan_df, self.wangchan_columns[0], self.wangchan_columns[1], "idx")
         
         with open(section_idx_path, "r") as f:
             section_idx = json.load(f)

@@ -41,11 +41,11 @@ async def evaluate_ragger(ragger: Ragger, golden_retriever: bool = False, batch_
             tax_results = json.load(f)
     for i in tqdm(range(len(tax_results), tax_df.shape[0], batch_size)):
         
-        job_params = tax_df.iloc[i: i+batch_size][["file_name", "ข้อหารือ", "actual_relevant_laws"]].to_dict(orient="records")
+        job_params = tax_df.iloc[i: i+batch_size][["idx", "ข้อหารือ", "actual_relevant_laws"]].to_dict(orient="records")
         if isinstance(job_params, dict):
             job_params = [job_params]
 
-        indices = [p["file_name"] for p in job_params]
+        indices = [p["idx"] for p in job_params]
         queries = [p["ข้อหารือ"] for p in job_params]
         
         if golden_retriever:

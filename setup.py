@@ -20,7 +20,7 @@ def main():
     
     wcx_df.to_csv("/app/test_data/hf_wcx.csv", encoding="utf-8-sig", index=False)
     tax_df.to_csv("/app/test_data/hf_tax.csv", encoding="utf-8-sig", index=False)
-    test_df.to_csv("/app/test_data/lclm_sample.csv", encoding="utf-8-sig", index=False)
+    test.to_csv("/app/test_data/lclm_sample.csv", encoding="utf-8-sig", index=False)
     
     
 
