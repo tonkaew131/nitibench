@@ -1,6 +1,6 @@
 law_dir: /app/test_data/laws
-tax_data_path: /app/test_data/usable_tax_case.csv
-wangchan_data_path: /app/test_data/final_extra_data.csv
+tax_data_path: /app/test_data/hf_tax.csv
+wangchan_data_path: /app/test_data/hf_wcx.csv
 output_path: /app/LRG/results/retriever
 
 metrics:

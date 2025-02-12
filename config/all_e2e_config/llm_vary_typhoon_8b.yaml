@@ -20,7 +20,7 @@ llm_config:
         temperature: 0.5
         max_tokens: 2048
         base_url: https://api.opentyphoon.ai/v1
-        api_key: sk-I3DUMsy2u9BcDYmlidlWN8sy1U2OdBFFBakyD2yoV4FQeK2q
+        api_key: XXX
       
 output_path: /app/LRG/results/e2e/v0.1/llm_vary
 batch_size: 50

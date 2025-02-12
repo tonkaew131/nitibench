@@ -1,6 +1,6 @@
 data_config:
-    # golden: 
-    #       node_path: /app/LRG/chunking/golden/nodes.json
+    golden: 
+          node_path: /app/LRG/chunking/golden/nodes.json
     chunk: 
           node_path: /app/LRG/chunking/553_50_line/nodes.json
       

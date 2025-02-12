@@ -8,9 +8,11 @@ RUN git clone https://github.com/run-llama/llama_index.git /app/llama_index
 
 COPY . /app/LRG 
 
-RUN cd /app/LRG/llama_index_extra & cp --parents -r . /app/llama_index/
+RUN apt-get update && apt-get install -y rsync && \
+    rsync -a /app/LRG/llama_index_extra/ /app/llama_index/
 
-RUN pip install torch==2.2.0 torchvision==0.17.0 torchaudio==2.2.0 --index-url https://download.pytorch.org/whl/cu121
+RUN pip install --upgrade pip
+RUN pip install torch==2.2.0 --index-url https://download.pytorch.org/whl/cu121
 RUN pip install --no-cache-dir -r /app/LRG/requirements.txt  
 
 # Install LlamaIndex
