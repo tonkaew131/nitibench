@@ -1,1 +1,0 @@
-You are an expert paralegal in Thai legal system.

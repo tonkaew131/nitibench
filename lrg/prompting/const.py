@@ -1,1 +1,0 @@
-DEFAULT_SYSTEM_PROMPT_TEMPLATE_NAME = "system_prompt.md"

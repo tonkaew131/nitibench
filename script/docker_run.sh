@@ -1,1 +1,0 @@
-docker run -it --name lrg -p 7860:7860 -v "$PWD:/app" --env-file ./artifact/.env python:3.10-slim bash
