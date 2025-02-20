@@ -1,8 +1,10 @@
 import pandas as pd
 from sklearn.model_selection import train_test_split
 import json
+import os
+# This script is run when creating image.
+# The purpose is to load the data from huggingface and do some preprocessing to prepare for evaluation
 
-    # First, remove any sections that are not in the law
 def filter_reduced_law(relevant_laws, possible_chunks):
     
     return [s for s in relevant_laws if f"{s['law']}-{s['sections']}" in possible_chunks]
@@ -10,8 +12,12 @@ def filter_reduced_law(relevant_laws, possible_chunks):
 
 def main():
 
-    wcx_df = pd.read_csv("/app/test_data/hf_wcx.csv", encoding="utf-8-sig", converters={"relevant_laws": eval})
-    tax_df = pd.read_csv("/app/test_data/hf_tax.csv",  encoding="utf-8-sig", converters={"relevant_laws": eval})
+    splits = {'ccl': 'data/nitibench-ccl.parquet', 'tax': 'data/nitibench-tax.parquet'}
+
+    wcx_df = pd.read_parquet("hf://datasets/VISAI-AI/nitibench/" + splits["ccl"])
+    tax_df = pd.read_parquet("hf://datasets/VISAI-AI/nitibench/" + splits["tax"])
+
+    os.makedirs("/app/test_data")
     
     tax_df = tax_df.rename(columns = {"question": "ข้อหารือ", "relevant_laws": "actual_relevant_laws"})
     

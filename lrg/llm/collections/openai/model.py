@@ -75,9 +75,7 @@ class OpenAIModel(object):
                 **self.config
             )
             
-            # print(response)
             response.choices[0].message.content = bias + response.choices[0].message.content
-            # print(response)
             
         elif structure is not None:
             response = await self.client.beta.chat.completions.parse(

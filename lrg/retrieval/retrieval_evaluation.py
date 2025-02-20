@@ -110,10 +110,9 @@ async def evaluate_retrieval(config_path: str):
                         metrics, retriever=retriever
                     )
 
-            # tax_results = await evaluator.evaluate_dataset_multik(
-            #                         dataset.qa_tax, k, mapping = mapping
-            #                     )
-            # print(len(tax_results[1]))
+            tax_results = await evaluator.evaluate_dataset_multik(
+                                    dataset.qa_tax, k, mapping = mapping
+                                )
 
             wangchan_results = await evaluator.evaluate_dataset_multik(
                                     dataset.qa_wangchan, k, mapping = mapping
@@ -121,17 +120,9 @@ async def evaluate_retrieval(config_path: str):
 
 
             print("Dumping Results...")
-            # tax_result_df = convert_result_to_df(tax_results, k, tax_indices)
-            # tax_result_df.to_csv(os.path.join(strat_dir, "tax", f"{m}.csv"), index=False)
+            tax_result_df = convert_result_to_df(tax_results, k, tax_indices)
+            tax_result_df.to_csv(os.path.join(strat_dir, "tax", f"{m}.csv"), index=False)
 
             wangchan_result_df = convert_result_to_df(wangchan_results, k, wangchan_indices)
-            wangchan_result_df.to_csv(os.path.join(strat_dir, "wangchan", f"{m}.csv"), index=False)
-            # display(tax_result_df)
-
-            # break
+            wangchan_result_df.to_csv(os.path.join(strat_dir, "wangchan", f"{m}.csv"), index=False)       
             
-            
-            
-    
-    
-

@@ -174,7 +174,6 @@ class PromptManager(object):
         assert dataset in self.DATASET_NAMES, "{} not found in DATASET_NAMES".format(dataset)
         
         extra_task = task.split("-")[1] if len(task.split("-")) > 1 else ""
-        # print(task, extra_task)
         
         system_path = ""
         if extra_task in ["long", "pure"]:
@@ -192,15 +191,12 @@ class PromptManager(object):
                 "turn_files": self.turn_files[f"{task}-{dataset}"],
                 "query": query}
             
-            # print(data)
 
             return self.template.render(data)
 
     def get_prompt(self, prompt_str):
         prompts = []
         for line in prompt_str.split("\n"):
-            # print(line)
-            # print("==============")
             if re.search(r"^<system>", line.strip()):
                 prompts.append({"role": "system", "content": [line.replace("<system>", "").strip()]})
             elif re.search(r"^<user>", line.strip()):
@@ -269,8 +265,6 @@ class PromptManager(object):
             else:
                 new_prompts.append({"role": prompt["role"], "content": [{"type": "text", "text": prompt["content"]}]})
                 
-            # print(new_prompts[-1])
-            # print("========================")
 
         #The last one should be cached
         new_prompts[-1]["content"][0]["cache_control"] = {"type": "ephemeral"}
@@ -292,13 +286,10 @@ class PromptManager(object):
         assert dataset in self.DATASET_NAMES, "{} not found in DATASET_NAMES".format(dataset)
         
         prompt_str = self.get_prompt_rendered(task=task, dataset=dataset, query=query).strip()
-        # print(prompt_str)
 
         prompts = self.get_prompt(prompt_str=prompt_str)
-        # print(prompts)
         
         type_name = model.split('-')[0]
-        # print(type_name)
         if type_name in ["o1",'aisingapore/gemma2', "typhoon"]: # (type_name == "o1") or (type_name == 'aisingapore/gemma2') :
             type_name = "gpt"
 

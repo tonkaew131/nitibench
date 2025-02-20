@@ -150,7 +150,7 @@ class BGEM3Index(BaseIndex[IndexDict]):
         weights_for_different_modes: List[float] = None,
     ) -> "BGEM3Index":
         sc = StorageContext.from_defaults(persist_dir=persist_dir)
-        index = BGEM3Index(
+        index = cls(
             model_name=model_name,
             index_name=index_name,
             index_struct=sc.index_store.index_structs()[0],
@@ -182,14 +182,10 @@ class BGEM3Index(BaseIndex[IndexDict]):
             return_sparse=True,
             return_colbert_vecs=True,
         )
-        # print("Encoding Query Take: {}".format(time.time()- start_time))
-        # start_time = time.time()
         
         dense_scores = np.matmul(
             query_embed["dense_vecs"], self._multi_embed_store["dense_vecs"].T
         )
-        # print("Dense Score Take: {}".format(time.time()- start_time))
-        # start_time = time.time()
 
         sparse_scores = np.array(
             [
@@ -199,11 +195,6 @@ class BGEM3Index(BaseIndex[IndexDict]):
                 for doc_lexical_weights in self._multi_embed_store["lexical_weights"]
             ]
         )
-        # print("Sparse Score Take: {}".format(time.time()- start_time))
-        # start_time = time.time()
-        # print(query_embed["colbert_vecs"].shape)
-        
-        # colbert_scores = self.model.multi_colbert_score(query_embed["colbert_vecs"], self.cache_pad_docs, self.cache_pad_docs_size).detach().cpu().numpy()
 
         colbert_scores = np.array(
             [
@@ -213,10 +204,6 @@ class BGEM3Index(BaseIndex[IndexDict]):
                 for doc_colbert_vecs in self._multi_embed_store["colbert_vecs"]
             ]
         )
-        # print(colbert_scores)
-        # # print(colbert_scores_2)
-        # print((colbert_scores< 0).sum())
-        # print("Colbert Score Take: {}".format(time.time()- start_time))
         start_time = time.time()
 
         if self.weights_for_different_modes is None:
@@ -236,11 +223,7 @@ class BGEM3Index(BaseIndex[IndexDict]):
         topk_scores = [combined_scores[idx] for idx in topk_indices]
 
         node_doc_ids = [self._docs_pos_to_node_id[idx] for idx in topk_indices]
-        # print("Node ID retrieved: {}".format(time.time()- start_time))
-        # start_time = time.time()
         nodes = self.docstore.get_nodes(node_doc_ids)
-        # print("Get node from docstore: {}".format(time.time()- start_time))
-        # start_time = time.time()
 
         nodes_with_score = []
         for node, score in zip(nodes, topk_scores):

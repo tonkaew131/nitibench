@@ -297,7 +297,6 @@ class BaseRetrievalEvaluator(BaseModel):
             expected_ids = dataset.relevant_docs[query_id]
             response_jobs.append(eval_worker(query, expected_ids, mode))
         
-        print("Response Jobs created!!")
         if show_progress:
 
             eval_results = await tqdm_asyncio.gather(*response_jobs)

@@ -37,10 +37,10 @@ def init_bm25(model_name: str, batch_size: int, dataset, k: int, strat_name: str
 def init_huggingface(model_name: str, batch_size: int, dataset, k: int, strat_name: str):
     
     if model_name == "wangchan-rerank":
-        model_path = "/app/cache/finetune_wangchan_human_rerank"
+        model_path = "VISAI-AI/nitibench-ccl-human-finetuned-bge-m3"
         
     elif model_name == "wangchan-auto-rerank":
-        model_path = "/app/cache/finetune_wangchan_auto_rerank"
+        model_path = "VISAI-AI/nitibench-ccl-auto-finetuned-bge-m3"
         
     elif model_name == "bge-m3":
         model_path = "BAAI/bge-m3"
@@ -95,9 +95,9 @@ def init_bge(model_name:str, batch_size: int, dataset, k: int, strat_name: str):
     if model_name == "bge-m3-multi":
         model_path = "BAAI/bge-m3"
     elif model_name == "wangchan-rerank-multi":
-        model_path = "/app/cache/finetune_wangchan_human_rerank"
+        model_path = "VISAI-AI/nitibench-ccl-human-finetuned-bge-m3"
     elif model_name == "wangchan-auto-rerank-multi":
-        model_path = "/app/cache/finetune_wangchan_auto_rerank"
+        model_path = "VISAI-AI/nitibench-ccl-auto-finetuned-bge-m3"
         
     index = BGEM3Index(
                         nodes = dataset.text_nodes,

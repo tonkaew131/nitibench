@@ -5,7 +5,7 @@ import os
 import yaml
 import json
 
-os.environ["CUDA_VISIBLE_DEVICES"] = "3"
+
 
 sys.path.append("/app/LRG")
 import pandas as pd
@@ -14,7 +14,7 @@ from lrg.data import EvalDataset
 from lrg.retrieval.retrieval_init import init_retriever
 from lrg.prompting import PromptManager
 from lrg.llm import init_llm
-from lrg.augmenter import AugmenterConfig, Augmenter
+from lrg.augmenter import NitiLinkAugmenterConfig, NitiLinkAugmenter
 from lrg.e2e import Ragger
 
 from tqdm import tqdm
@@ -127,6 +127,8 @@ async def main(args):
     
     batch_size = config.get("batch_size", 1)
     output_path = config["output_path"]
+
+    os.environ["CUDA_VISIBLE_DEVICES"] = config.get("device", 0)
     
     #Makedirs
     os.makedirs(output_path, exist_ok=True)
@@ -194,7 +196,7 @@ async def main(args):
         dataset = EvalDataset(**list(data_config.values())[0])
         
         for ac in augmenter_config:
-            augmenter = Augmenter(dataset = dataset, config = AugmenterConfig(**augmenter_config[ac], strat_name=dataset.strat_name))
+            augmenter = NitiLinkAugmenter(dataset = dataset, config = NitiLinkAugmenterConfig(**augmenter_config[ac], strat_name=dataset.strat_name))
             
             for lc in llm_config:
                 llm = init_llm(llm_config[lc])
@@ -224,7 +226,7 @@ async def main(args):
         dataset = EvalDataset(**data_config["golden"])
         
         for key in ref_keys:
-            augmenter = Augmenter(dataset = dataset, config = AugmenterConfig(**augmenter_config[key], strat_name=dataset.strat_name))
+            augmenter = NitiLinkAugmenter(dataset = dataset, config = NitiLinkAugmenterConfig(**augmenter_config[key], strat_name=dataset.strat_name))
             
             #Init the retriever as well
             for rc in retriever_config:
@@ -259,7 +261,7 @@ async def main(args):
             retriever = init_retriever(dataset=dataset, strat_name=dataset.strat_name, **retriever_config[rc])
             
             for ac in augmenter_config:
-                augmenter = Augmenter(dataset = dataset, config = AugmenterConfig(**augmenter_config[ac], strat_name=dataset.strat_name))
+                augmenter = NitiLinkAugmenter(dataset = dataset, config = NitiLinkAugmenterConfig(**augmenter_config[ac], strat_name=dataset.strat_name))
                 
                 for lc in llm_config:
                     llm = init_llm(llm_config[lc])
@@ -274,9 +276,6 @@ async def main(args):
                                 augmenter=augmenter,
                                 retriever=retriever)
                     
-                    # print(ragger.augmenter.config)
-                    # print(dataset.strat_name)
-                    # continue
                     
 
                     await evaluate_ragger(ragger, batch_size = batch_size, golden_retriever=False, setting_name = os.path.join(output_path, setting_name))

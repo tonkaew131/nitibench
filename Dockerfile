@@ -25,7 +25,7 @@ RUN pip install -e /app/llama_index/llama-index-integrations/retrievers/llama-in
 
 # Run the Python script to download and preprocess data
 RUN mv /app/LRG/test_data /app
-RUN python /app/LRG/setup.py 
+RUN python /app/LRG/setup_data.py 
 
 # Set the entrypoint to /app/LRG
 # ENTRYPOINT ["/app"]

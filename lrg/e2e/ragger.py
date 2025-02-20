@@ -4,7 +4,7 @@ from typing import List, Dict, Any, Optional, Union
 from ..llm import GeminiModel, OpenAIModel, ClaudeModel
 from ..data import EvalDataset
 from ..prompting import PromptManager
-from ..augmenter import Augmenter
+from ..augmenter import NitiLinkAugmenter
 
 from pydantic import ValidationError
 import time
@@ -24,7 +24,7 @@ class Ragger(object):
                  prompt_manager: PromptManager,
                  llm: Union[GeminiModel, OpenAIModel, ClaudeModel],
                  retriever: Optional[BaseRetriever] = None,
-                 augmenter: Optional[Augmenter] = None,
+                 augmenter: Optional[NitiLinkAugmenter] = None,
                  max_retries: int = 5
                 ):
     
@@ -89,7 +89,6 @@ class Ragger(object):
             
         elif (relevant_laws is not None):
             #Then retrieved nodes are the one we use from relevant laws
-            # print(relevant_laws)
             retrieved_nodes = [self.id_to_node[f"{l['law']}-{l['sections']}"] for l in relevant_laws if f"{l['law']}-{l['sections']}" in self.id_to_node]
             augmented_query = self.augmenter(query, retrieved_nodes)
             
@@ -115,7 +114,6 @@ class Ragger(object):
             task = "response-o1"
             
         formatted_prompt = self.prompt_manager.get_formatted_prompt(query=augmented_query, task=task, dataset=dataset_name, model=self.model_name)
-        # print(formatted_prompt)
 
         if name == "gemini":
             structure = self.prompt_manager.response_structure["response"][2]
@@ -143,7 +141,6 @@ class Ragger(object):
         
         counter = 0
         
-        # print(formatted_prompt)
         
         if self.o1:
             structure = None

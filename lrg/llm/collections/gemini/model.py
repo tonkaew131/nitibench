@@ -80,7 +80,6 @@ class GeminiModel(object):
         client = GenerativeModel(f"models/{self.model_name}", system_instruction="You are a helpful assistant")
        
         self.client = client
-        # print(self.client._system_instruction)
         
         
     async def complete_lc(self, system: str, messages: List[Dict], structure:TypedDict = None) -> Dict:

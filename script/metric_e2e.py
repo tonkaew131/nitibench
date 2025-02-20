@@ -145,7 +145,6 @@ async def calc_metric(row: pd.Series,
     augmented_query = query
 
     formatted_prompts = pm.get_formatted_prompt(query=augmented_query, task=task, dataset=dataset_name, model=model_name)
-    # print(formatted_prompts["messages"])
     
     name = model_name.split("-")[0]
     if name == "gemini":
@@ -216,7 +215,6 @@ async def main(args):
     for i, row in wangchan_result.iterrows():
 
         if not isinstance(row["content"], dict):
-            print(i)
             result.append({**row["usage"], "retrieved_ids": row["retrieved_ids"], "idx": row["idx"], "tries": row["tries"]})
         else:
             result.append({**row["content"], **row["usage"], "retrieved_ids": row["retrieved_ids"], "idx": row["idx"], "tries": row["tries"]})
@@ -229,7 +227,6 @@ async def main(args):
     for i, row in tax_result.iterrows():
 
         if not isinstance(row["content"], dict):
-            print(i)
             result.append({**row["usage"], "retrieved_ids": row["retrieved_ids"], "idx": row["idx"], "tries": row["tries"]})
         else:
             result.append({**row["content"], **row["usage"], "retrieved_ids": row["retrieved_ids"], "idx": row["idx"], "tries": row["tries"]})

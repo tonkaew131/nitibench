@@ -1,4 +1,4 @@
-from typing import List, Dict, Tuple
+from typing import List, Dict, Tuple, Literal
 import json
 from pydantic import BaseModel
 
@@ -7,20 +7,23 @@ import pandas as pd
 from llama_index.core.schema import NodeWithScore
 from ..data import EvalDataset
 
-class AugmenterConfig(BaseModel):
+class NitiLinkAugmenterConfig(BaseModel):
+    # Strat name here refers to the chunking strategy. The strategy can be any name as long as it is a string.
+    # If it contains golden, that means it uses golden chunking strategy which means each chunk is a section and can be used to do link.
+    # If it doesn't, it cannot be used to do cross ref. We chose to do this because for naive chunking, even though we know how each section links to each other, we couldn't know if the referencing span is in the chunked section or not!
     strat_name: str = "golden"
     reference: bool = False
     max_depth: int = 1
     
-class Augmenter(object):
+class NitiLinkAugmenter(object):
     """
-    Augmenter class. Need to have the following function
+    NitiLinkAugmenter class. Need to have the following function
     1. add_xml_tag: For when reference option is set to false or strat name is not golden
-    2. cross_ref, get_relevant_laws, relevant_laws_to_str: For retrieveing all relevant laws
+    2. link, get_relevant_laws, relevant_laws_to_str: For retrieveing all relevant laws
     3. __call__: main option for taking in query and retrieved node
     """
     
-    def __init__(self, dataset: EvalDataset, config: AugmenterConfig()):
+    def __init__(self, dataset: EvalDataset, config: NitiLinkAugmenterConfig):
         """
         Save config in its own attribute and take in dataset as well. Need to load section mapping as well
         """
@@ -50,32 +53,26 @@ class Augmenter(object):
             law_name, section = node.id_.split("-")
             return f"<law section={section} law_name={law_name}> {text} </law>"
         
-    def cross_ref(self, main_law: Tuple[str, str], relevant_laws: List = [], curr_depth: int = 0, max_depth: int = 2):
+    def link(self, main_law: Tuple[str, str], relevant_laws: List = [], curr_depth: int = 0, max_depth: int = 2):
         
         law_name_dict = self.dataset.law_name_dict
         
         if (curr_depth > max_depth) or (main_law in relevant_laws):
-            # print("HELLO")
-            # print(relevant_laws, main_law)
-            # print(curr_depth, max_depth)
             return relevant_laws
         #Also check if the main law exists, if not, just return the current set
         if not main_law[1] in self.dataset.sections[law_name_dict[main_law[0]]].index:
-            # print("HELLO2")
             return relevant_laws
         else:
             relevant_laws.append(main_law)
             #Then, drill down on the main law
             references = self.dataset.sections[law_name_dict[main_law[0]]].loc[main_law[1]]["reference"]
-            # print("Current References: ", references)
-            # print("============================")
             for reference in references:
                 if not reference["law_name"] in law_name_dict:
                     continue
 
                 reference = (reference["law_name"], reference["section_num"])
                 if not reference in relevant_laws:
-                    relevant_laws = self.cross_ref(reference, relevant_laws, curr_depth + 1, max_depth)
+                    relevant_laws = self.link(reference, relevant_laws, curr_depth + 1, max_depth)
 
             return relevant_laws
 
@@ -85,7 +82,7 @@ class Augmenter(object):
         return_law = dict()
 
         for r in laws:
-            curr_laws = self.cross_ref((r[0], r[1]), relevant_laws = [], curr_depth = 0, max_depth = max_depth)
+            curr_laws = self.link((r[0], r[1]), relevant_laws = [], curr_depth = 0, max_depth = max_depth)
             return_law[(r[0], r[1])] = []
 
             for l in curr_laws:
@@ -93,7 +90,6 @@ class Augmenter(object):
                     return_law[(r[0], r[1])].append(l)
                     added_law.add(l)
 
-        # print(list(return_law.values()))
         #Sanity check, no duplicates
         assert len(added_law) == len(set(sum(return_law.values(), []))), "Somethings wrong, got len(return_law) more than len(set(return_law))"
 

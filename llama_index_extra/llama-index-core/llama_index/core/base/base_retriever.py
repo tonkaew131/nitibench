@@ -243,9 +243,7 @@ class BaseRetriever(ChainableMixin, PromptMixin, DispatcherSpanMixin):
                 payload={EventPayload.QUERY_STR: query_bundle.query_str},
             ) as retrieve_event:
                 nodes = self._retrieve(query_bundle)
-                # print(len(nodes))
                 nodes = self._handle_recursive_retrieval(query_bundle, nodes)
-                # print(len(nodes))
                 retrieve_event.on_end(
                     payload={EventPayload.NODES: nodes},
                 )

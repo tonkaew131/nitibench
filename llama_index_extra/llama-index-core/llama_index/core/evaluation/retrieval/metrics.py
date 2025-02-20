@@ -60,7 +60,7 @@ class MultiHitRate(BaseRetrievalMetric):
         if mapping is not None:
             retrieved_ids = set(sum([mapping.get(r, []) for r in retrieved_ids], []))
         # Default HitRate calculation: Check if there is a single hit
-        is_hit = all(id in retrieved_ids for id in expected_ids)
+        is_hit = all(rid in retrieved_ids for rid in expected_ids)
         score = 1.0 if is_hit else 0.0
 
         return RetrievalMetricResult(score=score)
@@ -126,7 +126,7 @@ class HitRate(BaseRetrievalMetric):
             score = hits / len(expected_ids) if expected_ids else 0.0
         else:
             # Default HitRate calculation: Check if there is a single hit
-            is_hit = any(id in expected_ids for id in retrieved_ids)
+            is_hit = any(rid in expected_ids for rid in retrieved_ids)
             score = 1.0 if is_hit else 0.0
 
         return RetrievalMetricResult(score=score)
@@ -140,6 +140,7 @@ class MultiMRR(BaseRetrievalMetric):
     Attributes:
         metric_name (str): The name of the metric.
     """
+    # Multi-MRR@k = 1/N * sum((Recall / number of relevant retrieved) * reciprocal rank sum)
     
     metric_name: ClassVar[str] = "multimrr"
     
@@ -178,10 +179,12 @@ class MultiMRR(BaseRetrievalMetric):
         
         mapping = kwargs.get("mapping")
         #Given the expected_ids and retrieved ids. What we want to do is the same as MRR but now the denominator is subtracted by previously hit retrieved documents
+        # This is to track j in the Multi-MRR equation in the paper
         relevant_docs_count = 0
         
         expected_set = set(expected_ids)
         
+        # This is to track \Sigma_{j=1} ({|T_i intersects R_i|} * 1/(rank(d_j) - j + 1)) or reciprocal rank sum
         reciprocal_rank_sum = 0.0
         
         hit_docs = set()
@@ -200,15 +203,13 @@ class MultiMRR(BaseRetrievalMetric):
                 relevant_docs_count += 1
                 hit_docs = hit_docs.union(hit_doc)              
         
-        
-        # print(reciprocal_rank_sum, relevant_docs_count, hit_docs, expected_set)
+
+        recall_k = len(hit_docs) / len(expected_set)
         mrr_score = (
-            (reciprocal_rank_sum / relevant_docs_count) * (len(hit_docs) / len(expected_set))
+            (recall_k / relevant_docs_count) * reciprocal_rank_sum
             if relevant_docs_count > 0
             else 0.0
         )
-        # print(mrr_score)
-        # print("================")
 
         return RetrievalMetricResult(score=mrr_score)
     
