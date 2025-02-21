@@ -1,7 +1,9 @@
 # NitiBench
 
+[[Technical Report](https://arxiv.org/pdf/2502.10868)] | [[🤗 Hugging Face Dataset](https://huggingface.co/datasets/VISAI-AI/nitibench)]
+
 This repository hosts the evaluation script for the proposed benchmark in the paper:  
-**NitiBench: A Comprehensive Study of LLM Frameworks’ Capabilities for Thai Legal Question Answering** ([Technical Report](https://arxiv.org/pdf/2502.10868))  
+[**NitiBench: A Comprehensive Study of LLM Frameworks’ Capabilities for Thai Legal Question Answering**](https://arxiv.org/pdf/2502.10868)
 
 It contains two main scripts:  
 1. **Generating responses** using the setup proposed in the paper.  
@@ -90,7 +92,13 @@ The evaluation results will be saved in:
   - `wcx_e2e_metrics.json`  
 - **Global metrics:**  
   - `tax_global_metrics.json`  
-  - `wcx_global_metrics.json` 
+  - `wcx_global_metrics.json`
+ 
+## Models
+
+|Model Name|URL|
+|Human-Finetuned BGE-M3|[🤗 HuggingFace Model](https://huggingface.co/VISAI-AI/nitibench-ccl-human-finetuned-bge-m3)|
+|Auto-Finetuned BGE-M3|[🤗 HuggingFace Model](https://huggingface.co/VISAI-AI/nitibench-ccl-auto-finetuned-bge-m3)|
    
   
 ---
