@@ -4,11 +4,10 @@ import asyncio
 import os
 import yaml
 import json
-
-
-
-sys.path.append("/app/LRG")
 import pandas as pd
+
+if "/app/LRG" not in sys.path:
+    sys.path.append("/app/LRG")
 
 from lrg.data import EvalDataset
 from lrg.retrieval.retrieval_init import init_retriever
@@ -128,7 +127,8 @@ async def main(args):
     batch_size = config.get("batch_size", 1)
     output_path = config["output_path"]
 
-    os.environ["CUDA_VISIBLE_DEVICES"] = config.get("device", 0)
+    os.environ["CUDA_VISIBLE_DEVICES"] = str(config.get("device", "0"))
+    print(os.environ["CUDA_VISIBLE_DEVICES"])
     
     #Makedirs
     os.makedirs(output_path, exist_ok=True)
