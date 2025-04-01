@@ -36,7 +36,7 @@ def main():
     train, test = train_test_split(wcx_df, test_size=n_samples, random_state=42, shuffle=True, stratify=relevant_law_codes)
     
     wcx_df.to_csv("/app/test_data/hf_wcx.csv", encoding="utf-8-sig", index=False)
-    tax_df.iloc[:5].to_csv("/app/test_data/hf_tax.csv", encoding="utf-8-sig", index=False)
+    tax_df.to_csv("/app/test_data/hf_tax.csv", encoding="utf-8-sig", index=False)
     test.to_csv("/app/test_data/lclm_sample.csv", encoding="utf-8-sig", index=False)
     
     # Another thing we should do in setup is that we should remove some labels for evaluating chunking vary
