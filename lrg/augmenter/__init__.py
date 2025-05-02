@@ -1,1 +1,1 @@
-from .augmenter import AugmenterConfig, Augmenter
+from .augmenter import NitiLinkAugmenterConfig, NitiLinkAugmenter

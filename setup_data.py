@@ -17,9 +17,14 @@ def main():
     wcx_df = pd.read_parquet("hf://datasets/VISAI-AI/nitibench/" + splits["ccl"])
     tax_df = pd.read_parquet("hf://datasets/VISAI-AI/nitibench/" + splits["tax"])
 
-    os.makedirs("/app/test_data")
+    os.makedirs("/app/test_data", exist_ok=True)
     
     tax_df = tax_df.rename(columns = {"question": "ข้อหารือ", "relevant_laws": "actual_relevant_laws"})
+    tax_df["actual_relevant_laws"] = tax_df["actual_relevant_laws"].apply(lambda x: [{'law': _x['law_name'],
+                                                                                      'sections': _x['section_num']} for _x in x])
+    
+    wcx_df["relevant_laws"] = wcx_df["relevant_laws"].apply(lambda x: [{'law': _x['law_name'],
+                                                                        'sections': _x['section_num']} for _x in x])
     
     #Then, select the ratio
     ratio = 0.2

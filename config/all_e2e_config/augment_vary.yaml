@@ -20,7 +20,7 @@ llm_config:
           max_completion_tokens: 2048
           temperature: 0.5 #Default
       
-output_path: /app/LRG/results/e2e/v0.1/augment_vary
+output_path: /app/LRG/results/e2e/v0.2/augment_vary
 batch_size: 50
 device: 3
           

@@ -13,7 +13,6 @@ from lrg.data import EvalDataset
 from lrg.retrieval.retrieval_init import init_retriever
 from lrg.prompting import PromptManager
 from lrg.llm import init_llm
-from lrg.augmenter import AugmenterConfig, Augmenter
 from lrg.e2e import Ragger
 
 from tqdm import tqdm
@@ -233,9 +232,10 @@ async def main(args):
 
     tax_result = pd.DataFrame(result).rename(columns = {"answer": "student_answer", "citations": "student_citations"})
     
+    print(wangchan_result.shape)
     #Then, merge together with actual answer
     wangchan_df = pd.merge(dataset.wangchan_df, wangchan_result[["idx", wangchan_col_names["student_answer"], wangchan_col_names["student_laws"], wangchan_col_names["retrieved_ids"]]], left_on="idx", right_on="idx", how="inner")
-    assert wangchan_df.shape[0] == dataset.wangchan_df.shape[0], "Merge wangchan got incorrect shape"
+    assert wangchan_df.shape[0] == dataset.wangchan_df.shape[0], "Merge wangchan got incorrect shape. Got {} and {}".format(wangchan_df.shape, dataset.wangchan_df.shape)
     
     #Then, merge together with actual answer
     tax_df = pd.merge(dataset.tax_df, tax_result[["idx", tax_col_names["student_answer"], tax_col_names["student_laws"], tax_col_names["retrieved_ids"]]], left_on="idx", right_on="idx", how="inner")
@@ -297,6 +297,18 @@ async def main(args):
     tax_citations["coverage"] = sum(tax_coverage)/len(tax_coverage)
     tax_citations["contradiction"] = sum(tax_contradiction)/len(tax_contradiction)
     
+    #Another thing we want to do is calculate the global metrics for mrr, multimrr, hitrate, multihitrate and recall
+    if eval_retrieval:
+        retrieval_result = pd.DataFrame([t["retrieval_result"] for t in tax_e2e_metrics])
+        
+        for k in retrieval_result.columns:
+            if "recall" in k:
+                #Then calculate
+                lg = tax_df[tax_col_names["reference_laws"]].apply(len)
+                tax_citations["retrieval_micro_recall"] = (retrieval_result[k]*lg).sum() / lg.sum()
+            
+            tax_citations[f"retrieval_{k}"] = retrieval_result[k].mean()
+                
     tax_global_path = os.path.join(config["result_dir"], "tax_global_metrics.json")
     with open(tax_global_path, "w") as f:
         json.dump(tax_citations, f)
@@ -347,6 +359,18 @@ async def main(args):
     
     wangchan_citations["coverage"] = sum(wangchan_coverage)/len(wangchan_coverage)
     wangchan_citations["contradiction"] = sum(wangchan_contradiction)/len(wangchan_contradiction)
+    
+    #Another thing we want to do is calculate the global metrics for mrr, multimrr, hitrate, multihitrate and recall
+    if eval_retrieval:
+        retrieval_result = pd.DataFrame([t["retrieval_result"] for t in wangchan_e2e_metrics])
+        
+        for k in retrieval_result.columns:
+            if "recall" in k:
+                #Then calculate
+                lg = wangchan_df[wangchan_col_names["reference_laws"]].apply(len)
+                wangchan_citations["retrieval_micro_recall"] = (retrieval_result[k]*lg).sum() / lg.sum()
+            
+            wangchan_citations[f"retrieval_{k}"] = retrieval_result[k].mean()
     
     wangchan_global_path = os.path.join(config["result_dir"], "wangchan_global_metrics.json")
     with open(wangchan_global_path, "w") as f:
