@@ -15,10 +15,10 @@ MAP_MODEL = {
 
 def init_llm(config: Dict):
 
-    name = config["model"].split("-")[0]
+    model_type = config["type"]
 
-    assert name in MAP_MODEL, "Unrecognize model name: {}".format(model_name)
-    config_class, model_class = MAP_MODEL[name]
+    assert model_type in MAP_MODEL, "Unrecognize model model_type: {}".format(model_type)
+    config_class, model_class = MAP_MODEL[model_type]
 
     model_config = config_class(**config)
     print(model_config.model_dump())
