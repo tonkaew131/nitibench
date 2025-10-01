@@ -33,8 +33,15 @@ An example configuration is provided in `setting.env.example`.
 Use the following command to build the Docker image and create a container:
 
 ```bash
-docker build -t nitibench . & 
-docker run -dit --rm --network=host --gpus all --shm-size=10gb --name nitibench-container nitibench bash
+docker build \
+   -t nitibench-athichal-intern . &
+docker run \
+   -dit --rm \
+   --network=host \
+   --gpus all \
+   --shm-size=10gb \
+   --name nitibench-container \
+   nitibench-athichal-intern
 ```
 
 When the image is created, the script `setup_data.py` will be executed to pull the data from [HuggingFace](https://huggingface.co/datasets/VISAI-AI/nitibench), preprocess and store in `/app/test_data`
