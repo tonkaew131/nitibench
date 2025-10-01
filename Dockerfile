@@ -37,9 +37,14 @@ RUN mv /app/LRG/test_data /app && \
 
 FROM python:3.10-slim AS runtime
 
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends git && \
+    rm -rf /var/lib/apt/lists/*
+
 WORKDIR /app
 ENV VIRTUAL_ENV=/opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
+ENV GIT_PYTHON_GIT_EXECUTABLE=/usr/bin/git
 
 COPY --from=builder /opt/venv /opt/venv
 COPY --from=builder /app/llama_index /app/llama_index
