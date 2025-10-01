@@ -6,6 +6,7 @@ This repository hosts the evaluation script for the proposed benchmark in the pa
 [**NitiBench: A Comprehensive Study of LLM Frameworks’ Capabilities for Thai Legal Question Answering**](https://arxiv.org/pdf/2502.10868)
 
 It contains two main scripts:  
+
 1. **Generating responses** using the setup proposed in the paper.  
 2. **Evaluating responses** in both retrieval and end-to-end aspects.  
 
@@ -13,19 +14,22 @@ It contains two main scripts:
 
 ## 📌 Getting Started
 
-### 1️⃣ Clone the Repository  
+### 1️⃣ Clone the Repository
+
 Clone this repository to your local machine:
 
 ```bash
 git clone [REPO_URL]
-cd NitiBench
+cd nitiBench
 ```
 
-### 2️⃣ Configure API Keys  
+### 2️⃣ Configure API Keys
+
 Edit the environment settings file (`setting.env`) to store all your API keys.  
 An example configuration is provided in `setting.env.example`.
 
-### 3️⃣ Build and Run the Docker Container  
+### 3️⃣ Build and Run the Docker Container
+
 Use the following command to build the Docker image and create a container:
 
 ```bash
@@ -35,7 +39,8 @@ docker run -dit --rm --network=host --gpus all --shm-size=10gb --name nitibench-
 
 When the image is created, the script `setup_data.py` will be executed to pull the data from [HuggingFace](https://huggingface.co/datasets/VISAI-AI/nitibench), preprocess and store in `/app/test_data`
 
-### 4️⃣ Expected File Structure  
+### 4️⃣ Expected File Structure
+
 Once inside the container, the file structure should look like this:
 
 ```plaintext
@@ -59,7 +64,8 @@ app/
 
 ## 🚀 Using the Benchmark
 
-### 1️⃣ Generating Responses  
+### 1️⃣ Generating Responses
+
 To generate responses, use the configuration files inside:  
 📂 `/app/LRG/config/all_e2e_config/`  
 
@@ -76,7 +82,8 @@ python script/response_e2e.py --config_path=[PATH_TO_YOUR_CONFIG]
 
 ---
 
-### 2️⃣ Evaluating Responses  
+### 2️⃣ Evaluating Responses
+
 To evaluate the responses, create a config file inside:  
 📂 `/app/LRG/config/all_e2e_metric_config/`  
 
@@ -87,20 +94,20 @@ python script/metric_e2e.py --config_path=[PATH_TO_YOUR_CONFIG]
 ```
 
 The evaluation results will be saved in:  
-- **Per-query metrics:**  
+
+- **Per-query metrics:**
   - `tax_e2e_metrics.json`  
   - `wcx_e2e_metrics.json`  
 - **Global metrics:**  
   - `tax_global_metrics.json`  
   - `wcx_global_metrics.json`
- 
+
 ## Models
 
 |Model Name|URL|
 |Human-Finetuned BGE-M3|[🤗 HuggingFace Model](https://huggingface.co/VISAI-AI/nitibench-ccl-human-finetuned-bge-m3)|
 |Auto-Finetuned BGE-M3|[🤗 HuggingFace Model](https://huggingface.co/VISAI-AI/nitibench-ccl-auto-finetuned-bge-m3)|
-   
-  
+
 ---
 
 ## Acknowledgement  
@@ -137,17 +144,23 @@ We welcome contributions from the community! Whether it's **bug fixes, feature a
 
 1. **Fork** the repository  
 2. **Create your feature branch**  
-   ```
+
+   ```bash
    git checkout -b feature/NewFeature
    ```
+
 3. **Commit your changes**  
-   ```
+
+   ```bash
    git commit -m 'Add some NewFeature'
    ```
+
 4. **Push to the branch**  
-   ```
+
+   ```bash
    git push origin feature/NewFeature
    ```
+
 5. **Open a Pull Request**  
 
 We look forward to your contributions! 🚀
