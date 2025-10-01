@@ -4,7 +4,7 @@ from abc import abstractmethod
 from typing import Any, Dict, List, Optional
 
 from llama_index.core.base.base_query_engine import BaseQueryEngine
-from llama_index.core.query_pipeline.query import (
+from llama_index.core.query_pipeline import (
     ChainableMixin,
     InputKeys,
     OutputKeys,
