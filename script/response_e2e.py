@@ -65,6 +65,8 @@ async def evaluate_ragger(
 
         dataset_names = ["tax"] * len(indices)
 
+        print("Dataset tax count:", len(indices))
+
         start = time.time()
         jobs = ragger.rag_multi(
             indices=indices,
