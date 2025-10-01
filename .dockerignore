@@ -30,7 +30,6 @@ dist/
 Dockerfile*
 
 # Large or generated data
-/dump/
 chunking/*/jinnav2_colbert_index/
 
 # Node/other
