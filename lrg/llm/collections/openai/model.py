@@ -57,6 +57,8 @@ class OpenAIModel(object):
 
         self.api_key = self.config.pop("api_key")
 
+        self.type = self.config.pop("type")
+
         self._create_client()
 
     def _create_client(self) -> None:
