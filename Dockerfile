@@ -19,6 +19,7 @@ COPY requirements.txt /tmp/requirements.txt
 RUN pip install --no-cache-dir -r /tmp/requirements.txt
 
 RUN git clone https://github.com/run-llama/llama_index.git /app/llama_index
+RUN cd /app/llama_index && git checkout 125a06abff14030c006dfec2d11c7822881a758b
 COPY llama_index_extra/ /tmp/llama_index_extra/
 RUN rsync -a /tmp/llama_index_extra/ /app/llama_index/
 
