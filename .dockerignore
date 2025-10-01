@@ -1,0 +1,37 @@
+# Byte-compiled / cache files
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+
+# Python packaging
+*.egg-info/
+.eggs/
+build/
+dist/
+
+# Jupyter and data caches
+.ipynb_checkpoints/
+.cache/
+
+# Git
+.git/
+.gitignore
+
+# OS files
+.DS_Store
+
+# Docker
+Dockerfile*
+
+# Large or generated data
+/dump/
+chunking/*/jinnav2_colbert_index/
+
+# Node/other
+node_modules/
