@@ -47,25 +47,41 @@ async def evaluate_ragger(
             tax_results = json.load(f)
 
     for i in tqdm(range(len(tax_results), tax_df.shape[0], batch_size)):
+        # ==== START ====
+
+        print("100", time.time())
 
         job_params = tax_df.iloc[i : i + batch_size][
             ["idx", "ข้อหารือ", "actual_relevant_laws"]
         ].to_dict(orient="records")
+
+        print("200", time.time())
+
         if isinstance(job_params, dict):
             job_params = [job_params]
 
+        print("300", time.time())
+
         indices = [p["idx"] for p in job_params]
+        indices_size = len(indices)  # 50
+
+        print("400", time.time())
+
         queries = [p["ข้อหารือ"] for p in job_params]
+
+        print("500", time.time())
 
         if golden_retriever:
             relevant_laws = [p["actual_relevant_laws"] for p in job_params]
 
         else:
-            relevant_laws = [None] * len(indices)
+            relevant_laws = [None] * indices_size
 
-        dataset_names = ["tax"] * len(indices)
+        print("600", time.time())
 
-        print("Dataset tax count:", len(indices))
+        dataset_names = ["tax"] * indices_size
+
+        # ===== END =====
 
         start = time.time()
         jobs = ragger.rag_multi(
