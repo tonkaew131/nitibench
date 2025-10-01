@@ -109,7 +109,8 @@ class Ragger(object):
             # Then, augment the query
             augmented_query = self.augmenter(query, retrieved_nodes)
 
-        name = self.model_name.split("-")[0]
+        # name = self.model_name.split("-")[0]
+        name = self.inference_type
 
         task = "response"
         if self.long_context:
