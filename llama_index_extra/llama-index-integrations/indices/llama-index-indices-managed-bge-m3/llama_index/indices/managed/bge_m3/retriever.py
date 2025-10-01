@@ -61,5 +61,5 @@ class BGEM3Retriever(BaseRetriever):
             top_k=self._similarity_top_k,
             **self._kwargs,
         )
-        
+
         return result

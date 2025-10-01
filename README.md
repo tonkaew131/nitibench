@@ -149,18 +149,24 @@ We welcome contributions from the community! Whether it's **bug fixes, feature a
    git checkout -b feature/NewFeature
    ```
 
-3. **Commit your changes**  
+2.5 Format your code using `black`
+
+   ```bash
+   black .
+   ```
+
+1. **Commit your changes**  
 
    ```bash
    git commit -m 'Add some NewFeature'
    ```
 
-4. **Push to the branch**  
+2. **Push to the branch**  
 
    ```bash
    git push origin feature/NewFeature
    ```
 
-5. **Open a Pull Request**  
+3. **Open a Pull Request**  
 
 We look forward to your contributions! 🚀

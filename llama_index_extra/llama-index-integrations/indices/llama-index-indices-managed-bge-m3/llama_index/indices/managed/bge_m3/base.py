@@ -121,11 +121,18 @@ class BGEM3Index(BaseIndex[IndexDict]):
             return_sparse=True,
             return_colbert_vecs=True,
         )
-        
-        self.cache_pad_docs = [torch.from_numpy(p_reps) for p_reps in self._multi_embed_store["colbert_vecs"]]
-        self.cache_pad_docs_size = torch.from_numpy(np.array([x.size(0) for x in self.cache_pad_docs])).to("cuda")
-        self.cache_pad_docs = torch.nn.utils.rnn.pad_sequence(self.cache_pad_docs, batch_first=True).to("cuda")
-        
+
+        self.cache_pad_docs = [
+            torch.from_numpy(p_reps)
+            for p_reps in self._multi_embed_store["colbert_vecs"]
+        ]
+        self.cache_pad_docs_size = torch.from_numpy(
+            np.array([x.size(0) for x in self.cache_pad_docs])
+        ).to("cuda")
+        self.cache_pad_docs = torch.nn.utils.rnn.pad_sequence(
+            self.cache_pad_docs, batch_first=True
+        ).to("cuda")
+
         return index_struct
 
     def persist(self, persist_dir: str) -> None:
@@ -172,7 +179,7 @@ class BGEM3Index(BaseIndex[IndexDict]):
 
         Returns: list of NodeWithScore.
         """
-       
+
         # start_time = time.time()
         query_embed = self.model.encode(
             query_str,
@@ -182,7 +189,7 @@ class BGEM3Index(BaseIndex[IndexDict]):
             return_sparse=True,
             return_colbert_vecs=True,
         )
-        
+
         dense_scores = np.matmul(
             query_embed["dense_vecs"], self._multi_embed_store["dense_vecs"].T
         )

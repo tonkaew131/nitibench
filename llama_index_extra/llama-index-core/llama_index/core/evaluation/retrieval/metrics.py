@@ -12,9 +12,9 @@ from typing_extensions import assert_never
 
 _AGG_FUNC: Dict[str, Callable] = {"mean": np.mean, "median": np.median, "max": np.max}
 
+
 class MultiHitRate(BaseRetrievalMetric):
-    """Hit rate metric: Compute hit rate with two calculation options.
-    """
+    """Hit rate metric: Compute hit rate with two calculation options."""
 
     metric_name: ClassVar[str] = "multi_hit_rate"
 
@@ -50,13 +50,13 @@ class MultiHitRate(BaseRetrievalMetric):
             or not expected_ids
         ):
             raise ValueError("Retrieved ids and expected ids must be provided")
-            
+
         mapping = kwargs.get("mapping")
 
         expected_set = set(expected_ids)
-        
-        #If no mapping, optimal chunk is used -> Nothing extra is done
-        #If there is mapping, simply map and flatten the list
+
+        # If no mapping, optimal chunk is used -> Nothing extra is done
+        # If there is mapping, simply map and flatten the list
         if mapping is not None:
             retrieved_ids = set(sum([mapping.get(r, []) for r in retrieved_ids], []))
         # Default HitRate calculation: Check if there is a single hit
@@ -112,10 +112,10 @@ class HitRate(BaseRetrievalMetric):
             or not expected_ids
         ):
             raise ValueError("Retrieved ids and expected ids must be provided")
-        
+
         mapping = kwargs.get("mapping")
-        #If no mapping, optimal chunk is used -> Nothing extra is done
-        #If there is mapping, simply map and flatten the list
+        # If no mapping, optimal chunk is used -> Nothing extra is done
+        # If there is mapping, simply map and flatten the list
         if mapping is not None:
             retrieved_ids = set(sum([mapping.get(r, []) for r in retrieved_ids], []))
 
@@ -130,7 +130,8 @@ class HitRate(BaseRetrievalMetric):
             score = 1.0 if is_hit else 0.0
 
         return RetrievalMetricResult(score=score)
-    
+
+
 class MultiMRR(BaseRetrievalMetric):
     """
     Multi Label MRR (Mean Reciprocal Rank) metric with two calculation options.
@@ -140,10 +141,11 @@ class MultiMRR(BaseRetrievalMetric):
     Attributes:
         metric_name (str): The name of the metric.
     """
+
     # Multi-MRR@k = 1/N * sum((Recall / number of relevant retrieved) * reciprocal rank sum)
-    
+
     metric_name: ClassVar[str] = "multimrr"
-    
+
     def compute(
         self,
         query: Optional[str] = None,
@@ -176,33 +178,32 @@ class MultiMRR(BaseRetrievalMetric):
             or not expected_ids
         ):
             raise ValueError("Retrieved ids and expected ids must be provided")
-        
+
         mapping = kwargs.get("mapping")
-        #Given the expected_ids and retrieved ids. What we want to do is the same as MRR but now the denominator is subtracted by previously hit retrieved documents
+        # Given the expected_ids and retrieved ids. What we want to do is the same as MRR but now the denominator is subtracted by previously hit retrieved documents
         # This is to track j in the Multi-MRR equation in the paper
         relevant_docs_count = 0
-        
+
         expected_set = set(expected_ids)
-        
+
         # This is to track \Sigma_{j=1} ({|T_i intersects R_i|} * 1/(rank(d_j) - j + 1)) or reciprocal rank sum
         reciprocal_rank_sum = 0.0
-        
+
         hit_docs = set()
-        
-        #As for MRR, iterate through each retrieved ids, if there is mapping convert it to set of new ids, add intersection to hit docs
+
+        # As for MRR, iterate through each retrieved ids, if there is mapping convert it to set of new ids, add intersection to hit docs
         for index, doc_id in enumerate(retrieved_ids):
             if mapping is None:
                 doc_id = set([doc_id])
             else:
                 doc_id = set(mapping.get(doc_id, []))
-                
+
             hit_doc = doc_id.intersection(expected_set) - hit_docs
-            
+
             if len(hit_doc) > 0:
                 reciprocal_rank_sum += 1.0 / (index + 1 - relevant_docs_count)
                 relevant_docs_count += 1
-                hit_docs = hit_docs.union(hit_doc)              
-        
+                hit_docs = hit_docs.union(hit_doc)
 
         recall_k = len(hit_docs) / len(expected_set)
         mrr_score = (
@@ -212,8 +213,6 @@ class MultiMRR(BaseRetrievalMetric):
         )
 
         return RetrievalMetricResult(score=mrr_score)
-    
-    
 
 
 class MRR(BaseRetrievalMetric):
@@ -281,7 +280,7 @@ class MRR(BaseRetrievalMetric):
                     relevant_docs_count += 1
                     reciprocal_rank_sum += 1.0 / (index + 1)
                     hit_docs = hit_docs.union(hit_doc)
-                    
+
             mrr_score = (
                 reciprocal_rank_sum / relevant_docs_count
                 if relevant_docs_count > 0
@@ -299,7 +298,7 @@ class MRR(BaseRetrievalMetric):
                 hit_doc = doc_id.intersection(expected_set)
                 if len(hit_doc) > 0:
                     return RetrievalMetricResult(score=1.0 / (i + 1))
-                
+
             mrr_score = 0.0
 
         return RetrievalMetricResult(score=mrr_score)
@@ -354,9 +353,9 @@ class Precision(BaseRetrievalMetric):
         hit_docs = set()
         if mapping is None:
             precision = len(retrieved_set & expected_set) / len(retrieved_set)
-            
+
         else:
-            #Iterate through and count
+            # Iterate through and count
             hit_count = 0
             for id in retrieved_set:
                 converted_id = set(mapping.get(id, []))
@@ -364,9 +363,8 @@ class Precision(BaseRetrievalMetric):
                 if len(hit_doc) > 0:
                     hit_count += 1
                     hit_docs = hit_docs.union(hit_doc)
-                    
+
             precision = hit_count / len(retrieved_set)
-            
 
         return RetrievalMetricResult(score=precision)
 
@@ -412,16 +410,16 @@ class Recall(BaseRetrievalMetric):
             or not expected_ids
         ):
             raise ValueError("Retrieved ids and expected ids must be provided")
-        
+
         mapping = kwargs.get("mapping")
-        
-        #If mapping is None, easy work
+
+        # If mapping is None, easy work
         if mapping is None:
             retrieved_set = set(retrieved_ids)
-        #If not, just do the same as hit rate
+        # If not, just do the same as hit rate
         else:
             retrieved_set = set(sum([mapping.get(r, []) for r in retrieved_ids], []))
-        
+
         expected_set = set(expected_ids)
         recall = len(retrieved_set & expected_set) / len(expected_set)
 

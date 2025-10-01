@@ -169,7 +169,7 @@ class BaseRetrievalEvaluator(BaseModel):
             mode=mode,
             metric_dict=metric_dict,
         )
-    
+
     # @abstractmethod
     async def aevaluate_multik(
         self,
@@ -190,31 +190,38 @@ class BaseRetrievalEvaluator(BaseModel):
         retrieved_ids, retrieved_texts = await self._aget_retrieved_ids_and_texts(
             query, mode
         )
-        
-        assert len(retrieved_ids) >= max(k), "Please set the top k of the retriever to be at least the same as maximum k"
-        
+
+        assert len(retrieved_ids) >= max(
+            k
+        ), "Please set the top k of the retriever to be at least the same as maximum k"
+
         k_dict = {}
-        
+
         for _k in k:
             metric_dict = {}
             for metric in self.metrics:
                 eval_result = metric.compute(
-                    query, expected_ids, retrieved_ids[:_k], expected_texts, retrieved_texts[:_k], mapping=mapping
+                    query,
+                    expected_ids,
+                    retrieved_ids[:_k],
+                    expected_texts,
+                    retrieved_texts[:_k],
+                    mapping=mapping,
                 )
                 metric_dict[metric.metric_name] = eval_result
-            
+
             k_dict[_k] = RetrievalEvalResult(
-                            query=query,
-                            expected_ids=expected_ids,
-                            expected_texts=expected_texts,
-                            retrieved_ids=retrieved_ids[:_k],
-                            retrieved_texts=retrieved_texts[:_k],
-                            mode=mode,
-                            metric_dict=metric_dict,
-                        )
+                query=query,
+                expected_ids=expected_ids,
+                expected_texts=expected_texts,
+                retrieved_ids=retrieved_ids[:_k],
+                retrieved_texts=retrieved_texts[:_k],
+                mode=mode,
+                metric_dict=metric_dict,
+            )
 
         return k_dict
-    
+
     def evaluate_multik(
         self,
         query: str,
@@ -225,10 +232,19 @@ class BaseRetrievalEvaluator(BaseModel):
         mapping: Dict[str, List[str]] = None,
         **kwargs: Any,
     ) -> RetrievalEvalResult:
-        
-        return asyncio.run(aevaluate_multik(query=query, expected_ids=expected_ids, expected_texts=expected_texts, mode=mode, k=k, mapping=mapping, **kwargs))
-    
-    
+
+        return asyncio.run(
+            aevaluate_multik(
+                query=query,
+                expected_ids=expected_ids,
+                expected_texts=expected_texts,
+                mode=mode,
+                k=k,
+                mapping=mapping,
+                **kwargs,
+            )
+        )
+
     async def evaluate_dataset_multik(
         self,
         dataset: EmbeddingQAFinetuneDataset,
@@ -237,43 +253,43 @@ class BaseRetrievalEvaluator(BaseModel):
         **kwargs: Any,
     ) -> List[RetrievalEvalResult]:
         """Run evaluation with dataset. Handle multiple k as well. Return dictionary of multiple results"""
-        
+
         mode = RetrievalEvalMode.from_str(dataset.mode)
-        
+
         eval_results = {_k: [] for _k in k}
         # eval_results = []
         # eval_jobs = []
-        
-        # Then, just get the retrieved id and text first for every query        
+
+        # Then, just get the retrieved id and text first for every query
         for query_id, query in tqdm(dataset.queries.items()):
-            
+
             expected_ids = dataset.relevant_docs[query_id]
-            
-            tmp = await self.aevaluate_multik(query, expected_ids=expected_ids, mode=mode, k = k, mapping=mapping)
-            
+
+            tmp = await self.aevaluate_multik(
+                query, expected_ids=expected_ids, mode=mode, k=k, mapping=mapping
+            )
+
             for _k in tmp:
                 eval_results[_k].append(tmp[_k])
-        
-        #Creating jobs
-#         for query_id, query in tqdm(dataset.queries.items()):
-       
-#             expected_ids = dataset.relevant_docs[query_id]
-#             eval_jobs.append({"query": query, "expected_ids": expected_ids, "mode": mode, "k": k, "mapping": mapping})
-            
-#        #Running jobs
-#         # Use ProcessPoolExecutor for parallel processing
-#         with concurrent.futures.ProcessPoolExecutor(max_workers = 12) as executor:
-#             # Use tqdm to show progress
-#             futures = {executor.submit(self.evaluate_multik, **item): item for item in eval_jobs}
 
-#             # Collect results with progress display
-#             for future in tqdm(concurrent.futures.as_completed(futures), total=len(futures), desc="Processing Items"):
-#                 result = future.result()  # Get the result of each processed item
-#                 eval_results.append(result)
+        # Creating jobs
+        #         for query_id, query in tqdm(dataset.queries.items()):
 
+        #             expected_ids = dataset.relevant_docs[query_id]
+        #             eval_jobs.append({"query": query, "expected_ids": expected_ids, "mode": mode, "k": k, "mapping": mapping})
+
+        #        #Running jobs
+        #         # Use ProcessPoolExecutor for parallel processing
+        #         with concurrent.futures.ProcessPoolExecutor(max_workers = 12) as executor:
+        #             # Use tqdm to show progress
+        #             futures = {executor.submit(self.evaluate_multik, **item): item for item in eval_jobs}
+
+        #             # Collect results with progress display
+        #             for future in tqdm(concurrent.futures.as_completed(futures), total=len(futures), desc="Processing Items"):
+        #                 result = future.result()  # Get the result of each processed item
+        #                 eval_results.append(result)
 
         return eval_results
-        
 
     async def aevaluate_dataset(
         self,
@@ -296,7 +312,7 @@ class BaseRetrievalEvaluator(BaseModel):
         for query_id, query in dataset.queries.items():
             expected_ids = dataset.relevant_docs[query_id]
             response_jobs.append(eval_worker(query, expected_ids, mode))
-        
+
         if show_progress:
 
             eval_results = await tqdm_asyncio.gather(*response_jobs)

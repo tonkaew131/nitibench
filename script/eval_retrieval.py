@@ -9,10 +9,11 @@ sys.path.append("/app/LRG")
 
 from lrg.retrieval import evaluate_retrieval
 
+
 async def main(args):
-    
+
     await evaluate_retrieval(args.config_path)
-    
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
