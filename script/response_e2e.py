@@ -40,10 +40,12 @@ async def evaluate_ragger(
     wangchan_df = ragger.dataset.wangchan_df
 
     # First, do tax
+    print("Evaluating tax...")
     tax_results = []
     if os.path.exists(os.path.join(setting_name, "tax_response.json")):
         with open(os.path.join(setting_name, "tax_response.json"), "r") as f:
             tax_results = json.load(f)
+
     for i in tqdm(range(len(tax_results), tax_df.shape[0], batch_size)):
 
         job_params = tax_df.iloc[i : i + batch_size][

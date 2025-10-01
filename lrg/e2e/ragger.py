@@ -122,8 +122,9 @@ class Ragger(object):
         formatted_prompt = self.prompt_manager.get_formatted_prompt(
             query=augmented_query,
             task=task,
-            dataset=dataset_name,
             model=self.model_name,
+            dataset=dataset_name,
+            inference_type=self.inference_type,
         )
 
         if name == "gemini":

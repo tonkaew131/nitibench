@@ -373,7 +373,7 @@ class PromptManager(object):
 
     # Then, need to have a set of functions to format the prompt for each model
     # Get everything and return prompt ready for parsing
-    def get_formatted_prompt(self, query: str, task: str, model: str, dataset: str):
+    def get_formatted_prompt(self, query: str, task: str, model: str, dataset: str, inference_type: str):
 
         assert task in self.TASK_NAMES, "{} not found in TASK_NAMES".format(task)
         assert dataset in self.DATASET_NAMES, "{} not found in DATASET_NAMES".format(
@@ -386,12 +386,19 @@ class PromptManager(object):
 
         prompts = self.get_prompt(prompt_str=prompt_str)
 
-        type_name = model.split("-")[0]
+        # type_name = model.split("-")[0]
+        type_name = inference_type
         if type_name in [
             "o1",
             "aisingapore/gemma2",
             "typhoon",
         ]:  # (type_name == "o1") or (type_name == 'aisingapore/gemma2') :
             type_name = "gpt"
+
+        assert type_name in [
+            "gemini",
+            "claude",
+            "gpt",
+        ], "Unrecognize model type: {}".format(type_name)
 
         return eval(f"self.format_{type_name}_prompt(prompts, task= task)")
