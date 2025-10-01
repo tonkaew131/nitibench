@@ -6,6 +6,7 @@ import os
 # Define a model to represent the configuration
 class OpenAIConfig(BaseModel):
     model: str = "gpt-4o-2024-08-06"
+    model_type: str = "gpt"
     max_tokens: int = 2048
     n: int = 1
     temperature: float = 0.5

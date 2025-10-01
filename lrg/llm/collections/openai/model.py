@@ -52,12 +52,11 @@ class OpenAIModel(object):
         self.config = config.model_dump()
 
         self.model_name = self.config["model"]
+        self.model_type = self.config.pop("model_type")
 
         self.base_url = self.config.pop("base_url")
 
         self.api_key = self.config.pop("api_key")
-
-        self.type = self.config.pop("type")
 
         self._create_client()
 

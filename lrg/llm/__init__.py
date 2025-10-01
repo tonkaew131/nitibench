@@ -20,7 +20,7 @@ def init_llm(config: Dict):
     assert model_type in MAP_MODEL, "Unrecognize model model_type: {}".format(model_type)
     config_class, model_class = MAP_MODEL[model_type]
 
-    model_config = config_class(**config)
+    model_config = config_class(**config, model_type=model_type)
     print(model_config.model_dump())
     model = model_class(config=model_config)
 
