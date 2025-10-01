@@ -42,14 +42,14 @@ class Ragger(object):
         # Create node map for easy access
         self.id_to_node = {n.id_: n for n in self.dataset.text_nodes}
         self.model_name = self.llm.model_name.split("-")[0]
-        self.model_type = self.llm.type
-        assert self.model_type in [
+        self.inference_type = self.llm.inference_type
+        assert self.inference_type in [
             "gemini",
             "claude",
             "gpt",
             "o1",
             "typhoon",
-        ], "Unrecognized model type: {}".format(self.model_type)
+        ], "Unrecognized model type: {}".format(self.inference_type)
 
         self.strat_name = self.dataset.strat_name
         self.max_retries = max_retries

@@ -52,7 +52,7 @@ class OpenAIModel(object):
         self.config = config.model_dump()
 
         self.model_name = self.config["model"]
-        self.model_type = self.config.pop("model_type")
+        self.inference_type = self.config.pop("inference_type")
 
         self.base_url = self.config.pop("base_url")
 
