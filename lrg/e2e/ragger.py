@@ -111,7 +111,7 @@ class Ragger(object):
 
         # name = self.model_name.split("-")[0]
         name = self.inference_type
-        print("Getting prompt structure for model: {}".format(name))
+        # print("Getting prompt structure for model: {}".format(name))
 
         task = "response"
         if self.long_context:
@@ -179,11 +179,14 @@ class Ragger(object):
                     break
 
                 except Exception as e:
-                    print(e)
+                    print("RAG error:", e)
                     counter += 1
                     continue
             # if (counter == self.max_retries) and (response is None):
             #     response = {"content": {}, "usage": {}}
+
+        if response is None:
+            raise ValueError("RAG failed after max retries")
 
         # Save retrieve ids as well
         response["retrieved_ids"] = [n.id_ for n in retrieved_nodes]
