@@ -75,7 +75,8 @@ class OpenAIModel(object):
         """
         start_time = time.time()
 
-        if "typhoon" in self.model_name:
+        if "typhoon" in self.inference_type:
+        # if "typhoon" in self.model_name:
             messages += [{"role": "assistant", "content": bias}]
             response = await self.client.beta.chat.completions.parse(
                 messages=messages, **self.config
