@@ -111,6 +111,7 @@ class Ragger(object):
 
         # name = self.model_name.split("-")[0]
         name = self.inference_type
+        print("Getting prompt structure for model: {}".format(name))
 
         task = "response"
         if self.long_context:
