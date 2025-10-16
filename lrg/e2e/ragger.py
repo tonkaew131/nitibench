@@ -203,13 +203,44 @@ class Ragger(object):
         queries: List[str],
         dataset_names: List[str],
         relevant_laws: List[List[Dict]],
+        max_concurrent: Optional[int] = None,
     ):
+        """Run multiple RAG jobs concurrently with an optional concurrency cap.
 
-        # If the model name is not claude, just return the job of rag
-        # if self.model_name != "claude":
+        Args:
+            indices: List of ids corresponding to each request.
+            queries: List of queries to run.
+            dataset_names: List of dataset names for each query.
+            relevant_laws: For each query, a list of relevant law dicts (or empty list).
+            max_concurrent: If provided and > 0, limit the number of concurrent jobs.
+
+        Returns:
+            A list of response dicts in the same order as the input lists.
+        """
+
+        max_concurrent = 50
+
+        # Preserve existing behavior when no limit specified or invalid value provided
+        if not max_concurrent or max_concurrent <= 0:
+            return await asyncio.gather(
+                *(
+                    self.rag(i, q, r, d)
+                    for i, q, r, d in zip(
+                        indices, queries, relevant_laws, dataset_names
+                    )
+                )
+            )
+
+        # Enforce a concurrency limit using a semaphore
+        semaphore = asyncio.Semaphore(max_concurrent)
+
+        async def _bounded_rag(i: str, q: str, r: List[Dict], d: str):
+            async with semaphore:
+                return await self.rag(i, q, r, d)
+
         return await asyncio.gather(
             *(
-                self.rag(i, q, r, d)
+                _bounded_rag(i, q, r, d)
                 for i, q, r, d in zip(indices, queries, relevant_laws, dataset_names)
             )
         )
