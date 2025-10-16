@@ -33,8 +33,11 @@ async def evaluate_ragger(
     batch_size: int = 1,
     setting_name: str = "",
 ):
-
-    os.makedirs(setting_name, exist_ok=True)
+    try:
+        original_umask = os.umask(0)
+        os.makedirs(setting_name, mode=0o777, exist_ok=True)
+    finally:
+        os.umask(original_umask)
 
     tax_df = ragger.dataset.tax_df
     wangchan_df = ragger.dataset.wangchan_df
@@ -45,7 +48,9 @@ async def evaluate_ragger(
         with open(os.path.join(setting_name, "tax_response.json"), "r") as f:
             tax_results = json.load(f)
 
-    print(f"Started processing tax datasets: {len(tax_results)} (batch size: {batch_size})")
+    print(
+        f"Started processing tax datasets: {len(tax_results)} (batch size: {batch_size})"
+    )
     for i in tqdm(range(len(tax_results), tax_df.shape[0], batch_size)):
         job_params = tax_df.iloc[i : i + batch_size][
             ["idx", "ข้อหารือ", "actual_relevant_laws"]
@@ -90,7 +95,9 @@ async def evaluate_ragger(
         with open(os.path.join(setting_name, "wangchan_response.json"), "r") as f:
             wangchan_results = json.load(f)
 
-    print(f"Started processing wangchan datasets: {len(wangchan_results)} (batch size: {batch_size})")
+    print(
+        f"Started processing wangchan datasets: {len(wangchan_results)} (batch size: {batch_size})"
+    )
     for i in tqdm(range(len(wangchan_results), wangchan_df.shape[0], batch_size)):
 
         job_params = wangchan_df.iloc[i : i + batch_size][
