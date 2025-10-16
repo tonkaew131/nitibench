@@ -45,6 +45,7 @@ async def evaluate_ragger(
         with open(os.path.join(setting_name, "tax_response.json"), "r") as f:
             tax_results = json.load(f)
 
+    print(f"Started processing tax datasets: {len(tax_results)}")
     for i in tqdm(range(len(tax_results), tax_df.shape[0], batch_size)):
         job_params = tax_df.iloc[i : i + batch_size][
             ["idx", "ข้อหารือ", "actual_relevant_laws"]
@@ -88,7 +89,7 @@ async def evaluate_ragger(
         with open(os.path.join(setting_name, "wangchan_response.json"), "r") as f:
             wangchan_results = json.load(f)
 
-    print(len(wangchan_results))
+    print(f"Started processing wangchan datasets: {len(wangchan_results)}")
     for i in tqdm(range(len(wangchan_results), wangchan_df.shape[0], batch_size)):
 
         job_params = wangchan_df.iloc[i : i + batch_size][
