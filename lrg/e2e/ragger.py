@@ -218,7 +218,7 @@ class Ragger(object):
             A list of response dicts in the same order as the input lists.
         """
 
-        max_concurrent = 50
+        max_concurrent = 5
 
         # Preserve existing behavior when no limit specified or invalid value provided
         if not max_concurrent or max_concurrent <= 0:
