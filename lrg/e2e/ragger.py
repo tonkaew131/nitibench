@@ -219,6 +219,7 @@ class Ragger(object):
         """
 
         max_concurrent = 5
+        print(f"Max concurrent RAG jobs set to: {max_concurrent}")
 
         # Preserve existing behavior when no limit specified or invalid value provided
         if not max_concurrent or max_concurrent <= 0:
