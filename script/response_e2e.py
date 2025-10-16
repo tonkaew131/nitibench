@@ -45,7 +45,7 @@ async def evaluate_ragger(
         with open(os.path.join(setting_name, "tax_response.json"), "r") as f:
             tax_results = json.load(f)
 
-    print(f"Started processing tax datasets: {len(tax_results)}")
+    print(f"Started processing tax datasets: {len(tax_results)} (batch size: {batch_size})")
     for i in tqdm(range(len(tax_results), tax_df.shape[0], batch_size)):
         job_params = tax_df.iloc[i : i + batch_size][
             ["idx", "ข้อหารือ", "actual_relevant_laws"]
@@ -73,6 +73,7 @@ async def evaluate_ragger(
             queries=queries,
             relevant_laws=relevant_laws,
             dataset_names=dataset_names,
+            max_concurrent=5,
         )
 
         results = await jobs
@@ -89,7 +90,7 @@ async def evaluate_ragger(
         with open(os.path.join(setting_name, "wangchan_response.json"), "r") as f:
             wangchan_results = json.load(f)
 
-    print(f"Started processing wangchan datasets: {len(wangchan_results)}")
+    print(f"Started processing wangchan datasets: {len(wangchan_results)} (batch size: {batch_size})")
     for i in tqdm(range(len(wangchan_results), wangchan_df.shape[0], batch_size)):
 
         job_params = wangchan_df.iloc[i : i + batch_size][
@@ -114,6 +115,7 @@ async def evaluate_ragger(
             queries=queries,
             relevant_laws=relevant_laws,
             dataset_names=dataset_names,
+            max_concurrent=5,
         )
 
         start = time.time()
@@ -164,7 +166,7 @@ async def main(args):
         dataset = EvalDataset(**list(data_config.values())[0])
         # No need to parse retriever or augmenter
         for k in lclm_keys:
-            print("Doing {}...".format(k))
+            print("[LCLM] Doing {}...".format(k))
             llm = init_llm(config=llm_config[k])
 
             ragger = Ragger(dataset=dataset, prompt_manager=pm, llm=llm)
@@ -172,6 +174,8 @@ async def main(args):
             await evaluate_ragger(
                 ragger, batch_size=batch_size, setting_name=os.path.join(output_path, k)
             )
+
+            print("[LCLM] Done {}".format(k))
 
             del llm_config[k]
             del ragger
@@ -190,7 +194,7 @@ async def main(args):
 
             setting_name = f"parametric-{lc}"
 
-            print("Doing {}...".format(setting_name))
+            print("[Parametric Knowledge] Doing {}...".format(setting_name))
 
             ragger = Ragger(dataset=dataset, prompt_manager=pm, llm=llm)
 
@@ -199,6 +203,8 @@ async def main(args):
                 batch_size=batch_size,
                 setting_name=os.path.join(output_path, setting_name),
             )
+
+            print("[Parametric Knowledge] Done {}".format(setting_name))
 
             del ragger
             gc.collect()
@@ -226,7 +232,7 @@ async def main(args):
 
                 setting_name = f"{ac}-golden-retriever-{lc}"
 
-                print("Doing {}...".format(setting_name))
+                print("[Golden Retriever] Doing {}...".format(setting_name))
 
                 ragger = Ragger(
                     dataset=dataset, prompt_manager=pm, llm=llm, augmenter=augmenter
@@ -238,6 +244,8 @@ async def main(args):
                     golden_retriever=True,
                     setting_name=os.path.join(output_path, setting_name),
                 )
+
+                print("[Golden Retriever] Done {}".format(setting_name))
 
                 del ragger
                 gc.collect()
@@ -274,7 +282,7 @@ async def main(args):
 
                     setting_name = f"golden-{rc}-{key}-{lc}"
 
-                    print("Doing {}...".format(setting_name))
+                    print("[Augment with referencer] Doing {}...".format(setting_name))
 
                     ragger = Ragger(
                         dataset=dataset,
@@ -290,6 +298,9 @@ async def main(args):
                         golden_retriever=False,
                         setting_name=os.path.join(output_path, setting_name),
                     )
+
+                    print("[Augment with referencer] Done {}".format(setting_name))
+
                     del ragger
                     gc.collect()
                     torch.cuda.empty_cache()
@@ -318,7 +329,7 @@ async def main(args):
 
                     setting_name = f"{dc}-{rc}-{ac}-{lc}"
 
-                    print("Doing {}...".format(setting_name))
+                    print("[Everything else] Doing {}...".format(setting_name))
 
                     ragger = Ragger(
                         dataset=dataset,
@@ -334,6 +345,8 @@ async def main(args):
                         golden_retriever=False,
                         setting_name=os.path.join(output_path, setting_name),
                     )
+
+                    print("[Everything else] Done {}".format(setting_name))
 
                     del ragger
                     gc.collect()
