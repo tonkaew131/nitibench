@@ -89,53 +89,56 @@ async def evaluate_ragger(
 
         time.sleep(max(0, 30 - (time.time() - start)))
 
-    # Next, do wangchan
-    wangchan_results = []
-    if os.path.exists(os.path.join(setting_name, "wangchan_response.json")):
-        with open(os.path.join(setting_name, "wangchan_response.json"), "r") as f:
-            wangchan_results = json.load(f)
+    skip_wangchan_ds = os.environ["SKIP_WANGCHAN_DS"] == "1"
+    
+    if not skip_wangchan_ds:
+        # Next, do wangchan
+        wangchan_results = []
+        if os.path.exists(os.path.join(setting_name, "wangchan_response.json")):
+            with open(os.path.join(setting_name, "wangchan_response.json"), "r") as f:
+                wangchan_results = json.load(f)
 
-    print(
-        f"Started processing wangchan datasets: {wangchan_df.shape[0]}, cached: {len(wangchan_results)} (batch size: {batch_size})"
-    )
-    for i in tqdm(range(len(wangchan_results), wangchan_df.shape[0], batch_size)):
-
-        job_params = wangchan_df.iloc[i : i + batch_size][
-            ["idx", "question", "relevant_laws"]
-        ].to_dict(orient="records")
-        if isinstance(job_params, dict):
-            job_params = [job_params]
-
-        indices = [p["idx"] for p in job_params]
-        queries = [p["question"] for p in job_params]
-
-        if golden_retriever:
-            relevant_laws = [p["relevant_laws"] for p in job_params]
-
-        else:
-            relevant_laws = [None] * len(indices)
-
-        dataset_names = ["wangchan"] * len(indices)
-
-        jobs = ragger.rag_multi(
-            indices=indices,
-            queries=queries,
-            relevant_laws=relevant_laws,
-            dataset_names=dataset_names,
-            max_concurrent=5,
+        print(
+            f"Started processing wangchan datasets: {wangchan_df.shape[0]}, cached: {len(wangchan_results)} (batch size: {batch_size})"
         )
+        for i in tqdm(range(len(wangchan_results), wangchan_df.shape[0], batch_size)):
 
-        start = time.time()
-        results = await jobs
+            job_params = wangchan_df.iloc[i : i + batch_size][
+                ["idx", "question", "relevant_laws"]
+            ].to_dict(orient="records")
+            if isinstance(job_params, dict):
+                job_params = [job_params]
 
-        wangchan_results.extend(results)
+            indices = [p["idx"] for p in job_params]
+            queries = [p["question"] for p in job_params]
 
-        with open(os.path.join(setting_name, "wangchan_response.json"), "w") as f:
-            json.dump(wangchan_results, f)
+            if golden_retriever:
+                relevant_laws = [p["relevant_laws"] for p in job_params]
 
-        time.sleep(max(0, 60 - (time.time() - start)))
+            else:
+                relevant_laws = [None] * len(indices)
 
-    torch.cuda.empty_cache()
+            dataset_names = ["wangchan"] * len(indices)
+
+            jobs = ragger.rag_multi(
+                indices=indices,
+                queries=queries,
+                relevant_laws=relevant_laws,
+                dataset_names=dataset_names,
+                max_concurrent=5,
+            )
+
+            start = time.time()
+            results = await jobs
+
+            wangchan_results.extend(results)
+
+            with open(os.path.join(setting_name, "wangchan_response.json"), "w") as f:
+                json.dump(wangchan_results, f)
+
+            time.sleep(max(0, 60 - (time.time() - start)))
+
+        torch.cuda.empty_cache()
 
 
 async def main(args):
