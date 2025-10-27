@@ -5,6 +5,8 @@ import os
 import yaml
 import json
 import pandas as pd
+from colorama import Fore, Style
+
 
 if "/app/LRG" not in sys.path:
     sys.path.append("/app/LRG")
@@ -90,7 +92,7 @@ async def evaluate_ragger(
         time.sleep(max(0, 30 - (time.time() - start)))
 
     skip_wangchan_ds = os.environ["SKIP_WANGCHAN_DS"] == "1"
-    
+
     if not skip_wangchan_ds:
         # Next, do wangchan
         wangchan_results = []
@@ -176,7 +178,7 @@ async def main(args):
         dataset = EvalDataset(**list(data_config.values())[0])
         # No need to parse retriever or augmenter
         for k in lclm_keys:
-            print("[LCLM] Doing {}...".format(k))
+            print(f"[LCLM] {Fore.YELLOW}Doing{Style.RESET_ALL} {k}...")
             llm = init_llm(config=llm_config[k])
 
             ragger = Ragger(dataset=dataset, prompt_manager=pm, llm=llm)
@@ -185,7 +187,7 @@ async def main(args):
                 ragger, batch_size=batch_size, setting_name=os.path.join(output_path, k)
             )
 
-            print("[LCLM] Done {}".format(k))
+            print(f"[LCLM] {Fore.GREEN}Done{Style.RESET_ALL} {k}")
 
             del llm_config[k]
             del ragger
@@ -292,7 +294,9 @@ async def main(args):
 
                     setting_name = f"golden-{rc}-{key}-{lc}"
 
-                    print("[Augment with referencer] Doing {}...".format(setting_name))
+                    print(
+                        f"{Fore.BLUE}[Augment with referencer]{Style.RESET_ALL} {Fore.YELLOW}Doing{Style.RESET_ALL} {setting_name}..."
+                    )
 
                     ragger = Ragger(
                         dataset=dataset,
@@ -309,7 +313,9 @@ async def main(args):
                         setting_name=os.path.join(output_path, setting_name),
                     )
 
-                    print("[Augment with referencer] Done {}".format(setting_name))
+                    print(
+                        f"{Fore.BLUE}[Augment with referencer]{Style.RESET_ALL} {Fore.GREEN}Done{Style.RESET_ALL} {setting_name}"
+                    )
 
                     del ragger
                     gc.collect()
@@ -339,7 +345,9 @@ async def main(args):
 
                     setting_name = f"{dc}-{rc}-{ac}-{lc}"
 
-                    print("[Everything else] Doing {}...".format(setting_name))
+                    print(
+                        f"{Fore.BLUE}[Everything else]{Style.RESET_ALL} {Fore.YELLOW}Doing{Style.RESET_ALL} {setting_name}..."
+                    )
 
                     ragger = Ragger(
                         dataset=dataset,
@@ -356,7 +364,9 @@ async def main(args):
                         setting_name=os.path.join(output_path, setting_name),
                     )
 
-                    print("[Everything else] Done {}".format(setting_name))
+                    print(
+                        f"{Fore.BLUE}[Everything else]{Style.RESET_ALL} {Fore.GREEN}Done{Style.RESET_ALL} {setting_name}"
+                    )
 
                     del ragger
                     gc.collect()

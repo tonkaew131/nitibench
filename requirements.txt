@@ -13,3 +13,5 @@ ragatouille==0.0.8.post4
 FlagEmbedding==1.2.11
 python-dotenv==1.0.1
 jupyterlab==3.6
+
+colorama
