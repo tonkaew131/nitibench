@@ -25,10 +25,10 @@ def init_llm(config: Dict):
     _dump = model_config.model_dump()
     if isinstance(_dump, dict) and "api_key" in _dump:
         _val = _dump["api_key"]
-        if isinstance(_val, str) and len(_val) > 8:
-            _dump["api_key"] = f"{_val[:4]}...{_val[-4:]}"
+        if isinstance(_val, str) and len(_val) > 12:
+            _dump["api_key"] = f"{_val[:8]}...{_val[-4:]}"
         elif _val:
-            _dump["api_key"] = "***"
+            _dump["api_key"] = "*****"
         else:
             _dump["api_key"] = _val
     print(_dump)
