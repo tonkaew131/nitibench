@@ -165,6 +165,7 @@ async def calc_metric(
     pm: PromptManager,
     metric_name: List[str] = list(retrieval_metric.keys()),
     model_name: str = "gpt-4o-2024-08-06",
+    inference_type: str = "gpt",
     dataset_name: str = "tax",
     eval_retrieval: bool = False,
     mapping=None,
@@ -184,7 +185,11 @@ async def calc_metric(
     augmented_query = query
 
     formatted_prompts = pm.get_formatted_prompt(
-        query=augmented_query, task=task, dataset=dataset_name, model=model_name
+        query=augmented_query,
+        task=task,
+        dataset=dataset_name,
+        model=model_name,
+        inference_type=inference_type,
     )
 
     name = model_name.split("-")[0]
@@ -374,6 +379,7 @@ async def main(args):
     eval_retrieval = config.get("eval_retrieval", False)
     is_golden_chunk = "golden" in os.path.basename(config["result_dir"])
     model_name = config["llm_config"]["model"]
+    inference_type = config["llm_config"]["type"]
     wangchan_e2e_path = os.path.join(config["result_dir"], "wangchan_e2e_metrics.json")
     tax_e2e_path = os.path.join(config["result_dir"], "tax_e2e_metrics.json")
     batch_size = config.get("batch_size", 50)
@@ -402,6 +408,7 @@ async def main(args):
                 pm=pm,
                 dataset_name="tax",
                 model_name=model_name,
+                inference_type=inference_type,
                 eval_retrieval=eval_retrieval,
                 mapping=chunk_mapping if not is_golden_chunk else None,
             )
@@ -496,6 +503,7 @@ async def main(args):
                     pm=pm,
                     dataset_name="wangchan",
                     model_name=model_name,
+                    inference_type=inference_type,
                     eval_retrieval=eval_retrieval,
                     mapping=chunk_mapping if not is_golden_chunk else None,
                 )
