@@ -439,7 +439,7 @@ async def main(args):
 
     # Dump
     print("TAX DONE")
-    print("DUMPING TO ", tax_result_path)
+    print("DUMPING TO ", tax_e2e_path)
     tax_e2e_metrics.to_json(tax_e2e_path, orient="records")
     # Global Metrics
     tax_coverage = [
@@ -458,9 +458,7 @@ async def main(args):
 
     # Another thing we want to do is calculate the global metrics for mrr, multimrr, hitrate, multihitrate and recall
     if eval_retrieval:
-        retrieval_result = pd.DataFrame(
-            [t["retrieval_result"] for t in tax_e2e_metrics]
-        )
+        retrieval_result = pd.DataFrame(tax_e2e_metrics["retrieval_result"].tolist())
 
         for k in retrieval_result.columns:
             if "recall" in k:
@@ -509,6 +507,7 @@ async def main(args):
                 )
                 for _, row in wangchan_df.iloc[i : i + batch_size].iterrows()
             ]
+            wangchan_e2e_metrics.extend(await asyncio.gather(*jobs))
 
         wangchan_e2e_metrics = pd.DataFrame(wangchan_e2e_metrics)
 
@@ -536,7 +535,7 @@ async def main(args):
 
         # Dump
         print("WCX DONE")
-        print("DUMPING TO ", wangchan_result_path)
+        print("DUMPING TO ", wangchan_e2e_path)
         wangchan_e2e_metrics.to_json(wangchan_e2e_path, orient="records")
         # Global Metrics
         wangchan_coverage = [
@@ -560,7 +559,7 @@ async def main(args):
         # Another thing we want to do is calculate the global metrics for mrr, multimrr, hitrate, multihitrate and recall
         if eval_retrieval:
             retrieval_result = pd.DataFrame(
-                [t["retrieval_result"] for t in wangchan_e2e_metrics]
+                wangchan_e2e_metrics["retrieval_result"].tolist()
             )
 
             for k in retrieval_result.columns:
