@@ -7,6 +7,7 @@ from ..prompting import PromptManager
 from ..augmenter import NitiLinkAugmenter
 
 from pydantic import ValidationError
+from colorama import Fore, Style
 import time
 
 import asyncio
@@ -53,7 +54,9 @@ class Ragger(object):
 
         self.strat_name = self.dataset.strat_name
         self.max_retries = max_retries
-        print("Max Retries: {}".format(self.max_retries))
+        print(
+            f"{Style.DIM}[DEBUG] Max Retries: {Style.BRIGHT}{self.max_retries}{Style.RESET_ALL}"
+        )
 
         if hasattr(self.llm, "long_context"):
             self.long_context = self.llm.long_context

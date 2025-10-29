@@ -51,7 +51,7 @@ async def evaluate_ragger(
             tax_results = json.load(f)
 
     print(
-        f"Started processing tax datasets: {tax_df.shape[0]}, cached: {len(tax_results)} (batch size: {batch_size})"
+        f"{Style.DIM}[DEBUG] Started processing {Style.BRIGHT}tax{Style.DIM} datasets: {tax_df.shape[0]}, cached: {len(tax_results)} (batch size: {batch_size}){Style.RESET_ALL}"
     )
     for i in tqdm(range(len(tax_results), tax_df.shape[0], batch_size)):
         job_params = tax_df.iloc[i : i + batch_size][
@@ -101,7 +101,7 @@ async def evaluate_ragger(
                 wangchan_results = json.load(f)
 
         print(
-            f"Started processing wangchan datasets: {wangchan_df.shape[0]}, cached: {len(wangchan_results)} (batch size: {batch_size})"
+            f"{Style.DIM}[DEBUG] Started processing {Style.BRIGHT}wangchan{Style.DIM} datasets: {wangchan_df.shape[0]}, cached: {len(wangchan_results)} (batch size: {batch_size}){Style.RESET_ALL}"
         )
         for i in tqdm(range(len(wangchan_results), wangchan_df.shape[0], batch_size)):
 
@@ -178,7 +178,9 @@ async def main(args):
         dataset = EvalDataset(**list(data_config.values())[0])
         # No need to parse retriever or augmenter
         for k in lclm_keys:
-            print(f"[LCLM] {Fore.YELLOW}Doing{Style.RESET_ALL} {k}...")
+            print(
+                f"[LCLM] {Fore.YELLOW}Doing{Style.RESET_ALL} {Style.BRIGHT}{k}{Style.RESET_ALL}..."
+            )
             llm = init_llm(config=llm_config[k])
 
             ragger = Ragger(dataset=dataset, prompt_manager=pm, llm=llm)
@@ -187,7 +189,9 @@ async def main(args):
                 ragger, batch_size=batch_size, setting_name=os.path.join(output_path, k)
             )
 
-            print(f"[LCLM] {Fore.GREEN}Done{Style.RESET_ALL} {k}")
+            print(
+                f"[LCLM] {Fore.GREEN}Done{Style.RESET_ALL} {Style.BRIGHT}{k}{Style.RESET_ALL}"
+            )
 
             del llm_config[k]
             del ragger
@@ -295,7 +299,7 @@ async def main(args):
                     setting_name = f"golden-{rc}-{key}-{lc}"
 
                     print(
-                        f"{Fore.BLUE}[Augment with referencer]{Style.RESET_ALL} {Fore.YELLOW}Doing{Style.RESET_ALL} {setting_name}..."
+                        f"{Fore.CYAN}[Augment with referencer]{Style.RESET_ALL} {Fore.YELLOW}Doing{Style.RESET_ALL} {Style.BRIGHT}{setting_name}{Style.RESET_ALL}..."
                     )
 
                     ragger = Ragger(
@@ -314,7 +318,7 @@ async def main(args):
                     )
 
                     print(
-                        f"{Fore.BLUE}[Augment with referencer]{Style.RESET_ALL} {Fore.GREEN}Done{Style.RESET_ALL} {setting_name}"
+                        f"{Fore.CYAN}[Augment with referencer]{Style.RESET_ALL} {Fore.GREEN}Done{Style.RESET_ALL} {Style.BRIGHT}{setting_name}{Style.RESET_ALL}"
                     )
 
                     del ragger
@@ -346,7 +350,7 @@ async def main(args):
                     setting_name = f"{dc}-{rc}-{ac}-{lc}"
 
                     print(
-                        f"{Fore.BLUE}[Everything else]{Style.RESET_ALL} {Fore.YELLOW}Doing{Style.RESET_ALL} {setting_name}..."
+                        f"{Fore.CYAN}[Everything else]{Style.RESET_ALL} {Fore.YELLOW}Doing{Style.RESET_ALL} {Style.BRIGHT}{setting_name}{Style.RESET_ALL}..."
                     )
 
                     ragger = Ragger(
@@ -365,7 +369,7 @@ async def main(args):
                     )
 
                     print(
-                        f"{Fore.BLUE}[Everything else]{Style.RESET_ALL} {Fore.GREEN}Done{Style.RESET_ALL} {setting_name}"
+                        f"{Fore.CYAN}[Everything else]{Style.RESET_ALL} {Fore.GREEN}Done{Style.RESET_ALL} {Style.BRIGHT}{setting_name}{Style.RESET_ALL}"
                     )
 
                     del ragger
