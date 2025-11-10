@@ -13,3 +13,4 @@ class OpenAIConfig(BaseModel):
     seed: int = 69420
     base_url: str = "https://api.openai.com/v1"
     api_key: str = os.environ.get("OPENAI_API_KEY", "")
+    timeout: int = 600
