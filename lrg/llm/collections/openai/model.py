@@ -55,8 +55,8 @@ class OpenAIModel(object):
         self.inference_type = self.config.pop("inference_type")
 
         self.base_url = self.config.pop("base_url")
-
         self.api_key = self.config.pop("api_key")
+        self.timeout = self.config.pop("timeout")
 
         self._create_client()
 
