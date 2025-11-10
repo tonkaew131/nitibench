@@ -359,6 +359,7 @@ async def main(args):
                         llm=llm,
                         augmenter=augmenter,
                         retriever=retriever,
+                        max_retries=1,
                     )
 
                     await evaluate_ragger(
